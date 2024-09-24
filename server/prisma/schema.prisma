@@ -14,5 +14,20 @@ model User {
   login     String
   avatarUrl String @map("avatar_url")
 
+  memories Memory[]
+
   @@map("users")
+}
+
+model Memory {
+  id        String   @id @default(uuid())
+  coverUrl  String   @map("cover_url")
+  content   String
+  isPublic  Boolean  @default(false) @map("is_public")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map("user_id")
+
+  @@map("memories")
 }
