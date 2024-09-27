@@ -39,6 +39,6 @@ app.register(authRoutes)
 app.register(uploadRoutes)
 app.register(memoriesRoutes)
 
-app.listen({ port: env.PORT }).then(() => {
+app.listen({ host: env.HOST, port: env.PORT }).then(() => {
   console.log('HTTP server running')
 })
