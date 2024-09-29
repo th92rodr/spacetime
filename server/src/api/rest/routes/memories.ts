@@ -1,7 +1,7 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { prisma } from '@/lib/prisma'
+import { db } from '@/database/prisma'
 
 export const memoriesRoutes: FastifyPluginAsyncZod = async app => {
   app.addHook('preHandler', async request => {
@@ -14,7 +14,7 @@ export const memoriesRoutes: FastifyPluginAsyncZod = async app => {
     handler: async request => {
       const { sub: userId } = request.user
 
-      const memories = await prisma.memory.findMany({
+      const memories = await db.memory.findMany({
         select: { id: true, coverUrl: true, content: true, createdAt: true },
         where: { userId },
         orderBy: { createdAt: 'asc' },
@@ -43,7 +43,7 @@ export const memoriesRoutes: FastifyPluginAsyncZod = async app => {
       const { sub: userId } = request.user
       const { id } = request.params
 
-      const memory = await prisma.memory.findUnique({
+      const memory = await db.memory.findUnique({
         where: { id },
       })
 
@@ -73,7 +73,7 @@ export const memoriesRoutes: FastifyPluginAsyncZod = async app => {
       const { sub: userId } = request.user
       const { content, cover_url: coverUrl, is_public: isPublic } = request.body
 
-      const memory = await prisma.memory.create({
+      const memory = await db.memory.create({
         data: { userId, content, coverUrl, isPublic },
       })
 
@@ -99,7 +99,7 @@ export const memoriesRoutes: FastifyPluginAsyncZod = async app => {
       const { id } = request.params
       const { content, cover_url: coverUrl, is_public: isPublic } = request.body
 
-      let memory = await prisma.memory.findUnique({
+      let memory = await db.memory.findUnique({
         where: { id },
       })
 
@@ -111,7 +111,7 @@ export const memoriesRoutes: FastifyPluginAsyncZod = async app => {
         return reply.status(401).send()
       }
 
-      memory = await prisma.memory.update({
+      memory = await db.memory.update({
         where: { id },
         data: { content, coverUrl, isPublic },
       })
@@ -132,7 +132,7 @@ export const memoriesRoutes: FastifyPluginAsyncZod = async app => {
       const { sub: userId } = request.user
       const { id } = request.params
 
-      const memory = await prisma.memory.findUnique({
+      const memory = await db.memory.findUnique({
         where: { id },
       })
 
@@ -144,7 +144,7 @@ export const memoriesRoutes: FastifyPluginAsyncZod = async app => {
         return reply.status(401).send()
       }
 
-      await prisma.memory.delete({
+      await db.memory.delete({
         where: { id },
       })
     },

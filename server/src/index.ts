@@ -1,6 +1,6 @@
 import { restServer } from '@/api/rest/server'
+import { dbConnect, dbDisconnect } from '@/database/prisma'
 import { env } from '@/env'
-import { dbConnect, dbDisconnect } from '@/lib/prisma'
 
 const start = async () => {
   await dbConnect()
