@@ -1,5 +1,6 @@
 import { start, stop } from '@/api/rest/server'
 import { dbConnect, dbDisconnect } from '@/database/prisma'
+import { env } from '@/env'
 
 let isShuttingDown = false
 
@@ -20,9 +21,16 @@ const shutdown = async (error: Error | null, exitCode: number) => {
     console.log('Shutting down...')
   }
 
+  const timeout = setTimeout(() => {
+    console.warn('Forcefully shutting down due to timeout.')
+    process.exit(1)
+  }, env.SHUTDOWN_TIMEOUT)
+
   try {
     await dbDisconnect()
     await stop()
+
+    clearTimeout(timeout)
     console.log('Shutdown successfully.')
   } catch (error) {
     console.error('Error during shutdown:', error)
