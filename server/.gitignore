@@ -1,5 +1,8 @@
 node_modules/
-.env
+
+# Ignore .env files
+.env*
+!.env.example
 
 # Ignore SQLite database files
 prisma/dev.db
