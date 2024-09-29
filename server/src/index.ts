@@ -1,22 +1,45 @@
-import { restServer } from '@/api/rest/server'
+import { start, stop } from '@/api/rest/server'
 import { dbConnect, dbDisconnect } from '@/database/prisma'
-import { env } from '@/env'
 
-const start = async () => {
+let isShuttingDown = false
+
+const main = async () => {
   await dbConnect()
-
-  const server = restServer()
-  try {
-    await server.listen({ host: env.HOST, port: env.PORT })
-    console.log(`HTTP server listening at: http://${env.HOST}:${env.PORT}`)
-  } catch (error) {
-    server.log.error('Failed starting HTTP server.')
-    throw error
-  }
+  await start()
 }
 
-start().catch(async error => {
-  console.error(error)
-  await dbDisconnect()
-  process.exit(1)
+const shutdown = async (error: Error | null, exitCode: number) => {
+  if (isShuttingDown) {
+    return
+  }
+  isShuttingDown = true
+
+  if (error) {
+    console.error('Server error:', error)
+  } else {
+    console.log('Shutting down...')
+  }
+
+  try {
+    await dbDisconnect()
+    await stop()
+    console.log('Shutdown successfully.')
+  } catch (error) {
+    console.error('Error during shutdown:', error)
+    process.exit(1)
+  }
+
+  process.exit(exitCode)
+}
+
+main().catch(async error => {
+  await shutdown(error, 1)
+})
+
+process.on('SIGINT', async () => {
+  await shutdown(null, 0)
+})
+
+process.on('SIGTERM', async () => {
+  await shutdown(null, 0)
 })

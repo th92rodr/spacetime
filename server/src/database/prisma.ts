@@ -23,7 +23,7 @@ export async function dbConnect() {
     } else {
       console.error('Unexpected error during database connection:', error)
     }
-    return process.exit(1)
+    throw error
   }
 }
 
