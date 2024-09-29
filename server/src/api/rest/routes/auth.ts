@@ -1,8 +1,8 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
+import { db } from '@/database/prisma'
 import { env } from '@/env'
-import { prisma } from '@/lib/prisma'
 
 export const authRoutes: FastifyPluginAsyncZod = async app => {
   app.route({
@@ -52,12 +52,12 @@ export const authRoutes: FastifyPluginAsyncZod = async app => {
         avatar_url: avatarUrl,
       } = (await userResponse.json()) as UserResponse
 
-      let userDb = await prisma.user.findUnique({
+      let userDb = await db.user.findUnique({
         where: { githubId },
       })
 
       if (!userDb) {
-        userDb = await prisma.user.create({
+        userDb = await db.user.create({
           data: { githubId, login, name, avatarUrl },
         })
       }
