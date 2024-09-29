@@ -14,8 +14,15 @@ import { memoriesRoutes } from '@/api/rest/routes/memories'
 import { uploadRoutes } from '@/api/rest/routes/upload'
 import { env } from '@/env'
 
-export const restServer = (): FastifyInstance => {
-  const server = Fastify({
+let server: FastifyInstance
+
+export async function start() {
+  if (server) {
+    console.log('HTTP server already started.')
+    return
+  }
+
+  server = Fastify({
     logger: {
       level: env.NODE_ENV === 'development' ? 'info' : 'error',
     },
@@ -48,5 +55,18 @@ export const restServer = (): FastifyInstance => {
   server.register(uploadRoutes)
   server.register(memoriesRoutes)
 
-  return server
+  try {
+    await server.listen({ host: env.HOST, port: env.PORT })
+    console.log(`HTTP server listening at: http://${env.HOST}:${env.PORT}`)
+  } catch (error) {
+    server.log.error('Failed starting HTTP server.')
+    throw error
+  }
+}
+
+export async function stop() {
+  if (server) {
+    await server.close()
+    console.log('HTTP server stopped.')
+  }
 }
