@@ -30,7 +30,8 @@ export const authRoutes: FastifyPluginAsyncZod = async app => {
         token_type: string
       }
 
-      const { access_token: accessToken } = await accessTokenResponse.json() as AccessTokenResponse
+      const { access_token: accessToken } =
+        (await accessTokenResponse.json()) as AccessTokenResponse
 
       const userResponse = await fetch('https://api.github.com/user', {
         method: 'GET',
