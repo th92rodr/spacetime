@@ -24,12 +24,12 @@ export const restServer = (): FastifyInstance => {
 
   // Setup CORS
   server.register(cors, {
-    origin: '*',
+    origin: env.CORS_ORIGIN,
   })
 
   // Setup JWT
   server.register(jwt, {
-    secret: 'TOP_SECRET',
+    secret: env.JWT_SECRET,
   })
 
   // Setup the API to serve static files
