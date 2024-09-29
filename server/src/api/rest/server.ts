@@ -1,4 +1,3 @@
-import { resolve } from 'node:path'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
 import multipart from '@fastify/multipart'
@@ -34,7 +33,7 @@ export const restServer = (): FastifyInstance => {
 
   // Setup the API to serve static files
   server.register(fastifyStatic, {
-    root: resolve(__dirname, '../../../uploads'),
+    root: env.STATIC_FILES_DIR,
     prefix: '/uploads',
   })
 
